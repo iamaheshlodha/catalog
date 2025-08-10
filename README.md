@@ -1,1 +1,1 @@
-# e-commerce-app
+# catalog-app
