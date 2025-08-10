@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ProductType {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  products    Product[]
+
+  @@index([name])
+  @@map("product_types")
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  name          String
+  description   String?
+  images        String[]    @default([])
+  productTypeId String      @map("product_type_id")
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  productType   ProductType @relation(fields: [productTypeId], references: [id], onDelete: Cascade)
+  variants      Variant[]
+  addOns        AddOn[]
+
+  @@index([productTypeId])
+  @@index([name])
+  @@index([isActive])
+  @@index([productTypeId, isActive])
+  @@map("products")
+}
+
+model Variant {
+  id        String   @id @default(uuid())
+  sku       String   @unique
+  size      String?
+  color     String?
+  price     Decimal  @db.Decimal(10, 2)
+  stock     Int      @default(0)
+  productId String   @map("product_id")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([sku])
+  @@index([price])
+  @@index([stock])
+  @@index([productId, isActive])
+  @@map("variants")
+}
+
+model AddOn {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  productId   String   @map("product_id")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([productId, isActive])
+  @@map("add_ons")
+}
