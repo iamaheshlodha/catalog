@@ -62,7 +62,7 @@ const ProductDetail: React.FC = () => {
         <img
           src={product?.images?.[0]}
           alt={product.name}
-          className="w-full rounded md:w-1/2"
+          className="object-cover w-full rounded h-80 md:w-1/2"
         />
 
         <div className="flex-1">
